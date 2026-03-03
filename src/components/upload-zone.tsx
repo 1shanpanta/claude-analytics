@@ -112,12 +112,17 @@ export function UploadZone({ onDataLoaded }: { onDataLoaded: (data: DashboardDat
             <div className="flex items-start gap-3">
               <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/10 text-xs text-gray-400">1</span>
               <div>
-                <p className="text-sm text-gray-400">Run the export script in your terminal:</p>
-                <code className="mt-2 block rounded-lg bg-black/50 px-4 py-3 text-xs text-gray-300 font-mono">
-                  npx claude-analytics-export
-                </code>
-                <p className="mt-1 text-xs text-gray-600">
-                  Or clone the repo and run: <code className="text-gray-500">node scripts/export.mjs</code>
+                <p className="text-sm text-gray-400">Clone the repo and run the export script:</p>
+                <div className="mt-2 space-y-2">
+                  <code className="block rounded-lg bg-black/50 px-4 py-3 text-xs text-gray-300 font-mono">
+                    git clone https://github.com/1shanpanta/claude-analytics.git
+                  </code>
+                  <code className="block rounded-lg bg-black/50 px-4 py-3 text-xs text-gray-300 font-mono">
+                    node claude-analytics/scripts/export.mjs
+                  </code>
+                </div>
+                <p className="mt-1.5 text-xs text-gray-600">
+                  This reads your local <code className="text-gray-500">~/.claude/</code> data and outputs a single JSON file.
                 </p>
               </div>
             </div>
