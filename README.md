@@ -28,15 +28,15 @@ A personal analytics dashboard for [Claude Code](https://claude.ai/claude-code) 
 ```bash
 git clone https://github.com/1shanpanta/claude-analytics.git
 cd claude-analytics
-bun install
-bun dev
+npm install   # or: bun install
+npm run dev   # or: bun dev
 ```
 
 Opens at `http://localhost:3000` and auto-loads your `~/.claude/` data.
 
 ### Hosted (upload mode)
 
-1. Export your data:
+1. Export your data (no install needed — uses only Node built-ins):
 
 ```bash
 git clone https://github.com/1shanpanta/claude-analytics.git && cd claude-analytics

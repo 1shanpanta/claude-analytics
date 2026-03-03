@@ -132,7 +132,7 @@ export function UploadZone({ onDataLoaded }: { onDataLoaded: (data: DashboardDat
                   </code>
                 </div>
                 <p className="mt-1.5 text-xs text-gray-600">
-                  This reads your local <code className="text-gray-500">~/.claude/</code> data and outputs a single JSON file.
+                  No install needed — the script uses only Node built-ins. It reads your local <code className="text-gray-500">~/.claude/</code> data and outputs a single JSON file.
                 </p>
               </div>
             </div>
