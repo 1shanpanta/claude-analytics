@@ -1,36 +1,100 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Claude Code Analytics
 
-## Getting Started
+A personal analytics dashboard for [Claude Code](https://claude.ai/claude-code) sessions. Visualize your coding patterns, model usage, tool calls, and prompt history — all from the data Claude Code stores locally on your machine.
 
-First, run the development server:
+**Your data never leaves your browser.** The hosted version processes everything client-side.
+
+## Features
+
+- **Activity Heatmap** — GitHub-style contribution grid showing daily message activity
+- **Session Explorer** — Browse all sessions with expandable message threads (every user/assistant message)
+- **Model Breakdown** — Pie chart + bar chart + token table across all models used
+- **Tool Usage** — See which tools (Read, Edit, Bash, etc.) you use most
+- **Prompt History** — Searchable, clickable prompt log with copy-to-clipboard
+- **Stats Overview** — Clickable cards for total sessions, messages, tool calls, lines changed, files modified, avg session length
+- **Sessions by Hour** — Bar chart of when you code most
+- **Top Projects** — Ranked by time spent
+
+## Screenshots
+
+Dark neomorphic theme with white-ish charts on black background.
+
+## Quick Start
+
+### Local (reads your data directly)
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+git clone https://github.com/1shanpanta/claude-analytics.git
+cd claude-analytics
+bun install
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Opens at `http://localhost:3000` and auto-loads your `~/.claude/` data.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Hosted (upload mode)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Export your data:
 
-## Learn More
+```bash
+# clone the repo and run the export script
+node scripts/export.mjs
+```
 
-To learn more about Next.js, take a look at the following resources:
+2. Visit the hosted app and drop the generated `claude-analytics-export.json` file.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+All processing happens in your browser. Nothing is uploaded to any server.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## How It Works
 
-## Deploy on Vercel
+Claude Code stores session metadata, usage stats, and prompt history locally in `~/.claude/`:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| File | What it contains |
+|------|-----------------|
+| `~/.claude/stats-cache.json` | Aggregated stats, model usage, daily activity |
+| `~/.claude/usage-data/session-meta/*.json` | Per-session metadata (duration, tools, lines, commits) |
+| `~/.claude/history.jsonl` | Every prompt you've sent |
+| `~/.claude/projects/<id>/<session>.jsonl` | Full conversation messages (local mode only) |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The dashboard reads these files and renders charts + tables. No external APIs, no telemetry.
+
+## Tech Stack
+
+- **Next.js 16** (App Router)
+- **React 19**
+- **Tailwind CSS 4**
+- **shadcn/ui** (Card, Tabs, Badge, ScrollArea)
+- **Recharts** (Bar, Pie charts)
+- **Lucide Icons**
+- **bun** (package manager + runtime)
+
+## Project Structure
+
+```
+src/
+├── app/
+│   ├── page.tsx              # Server component, auto-detects local data
+│   ├── globals.css           # Dark neomorphic theme
+│   └── api/session-messages/ # API route for loading full conversation threads
+├── components/
+│   ├── client-page.tsx       # Client wrapper (upload vs dashboard)
+│   ├── upload-zone.tsx       # Drag-and-drop file upload landing
+│   ├── dashboard.tsx         # Main layout with tabs
+│   ├── stats-overview.tsx    # 6 clickable stat cards
+│   ├── activity-heatmap.tsx  # GitHub-style heatmap with hover tooltips
+│   ├── hour-chart.tsx        # Sessions by hour bar chart
+│   ├── project-breakdown.tsx # Top projects horizontal bar chart
+│   ├── session-table.tsx     # Expandable session list with message viewer
+│   ├── model-breakdown.tsx   # Pie + bar + table for model tokens
+│   ├── tool-usage-chart.tsx  # Tool usage + languages bar charts
+│   └── prompt-history.tsx    # Searchable prompt log with copy
+├── lib/
+│   ├── types.ts              # Shared TypeScript interfaces
+│   └── load-data.ts          # Server-side data loader (fs)
+scripts/
+└── export.mjs                # CLI export script for bundling data
+```
+
+## License
+
+MIT
