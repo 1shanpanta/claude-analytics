@@ -37,8 +37,8 @@ Opens at `http://localhost:3000` and auto-loads your `~/.claude/` data.
 1. Export your data:
 
 ```bash
-git clone https://github.com/1shanpanta/claude-analytics.git
-node claude-analytics/scripts/export.mjs
+git clone https://github.com/1shanpanta/claude-analytics.git && cd claude-analytics
+node scripts/export.mjs
 ```
 
 2. Visit the hosted app and drop the generated `claude-analytics-export.json` file.

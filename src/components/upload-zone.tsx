@@ -125,10 +125,10 @@ export function UploadZone({ onDataLoaded }: { onDataLoaded: (data: DashboardDat
                 <p className="text-sm text-gray-400">Clone the repo and run the export script:</p>
                 <div className="mt-2 space-y-2">
                   <code className="block rounded-lg bg-black/50 px-4 py-3 text-xs text-gray-300 font-mono">
-                    git clone https://github.com/1shanpanta/claude-analytics.git
+                    git clone https://github.com/1shanpanta/claude-analytics.git && cd claude-analytics
                   </code>
                   <code className="block rounded-lg bg-black/50 px-4 py-3 text-xs text-gray-300 font-mono">
-                    node claude-analytics/scripts/export.mjs
+                    node scripts/export.mjs
                   </code>
                 </div>
                 <p className="mt-1.5 text-xs text-gray-600">
