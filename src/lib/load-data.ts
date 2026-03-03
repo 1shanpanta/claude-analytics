@@ -9,9 +9,10 @@ export type {
   ModelUsage,
   StatsCache,
   DashboardData,
+  ProjectMemory,
 } from "./types";
 
-import type { SessionMeta, HistoryEntry, StatsCache, DashboardData } from "./types";
+import type { SessionMeta, HistoryEntry, StatsCache, DashboardData, ProjectMemory } from "./types";
 
 const CLAUDE_DIR = path.join(process.env.HOME || "~", ".claude");
 
@@ -63,15 +64,19 @@ export function loadHistory(): HistoryEntry[] {
   }
 }
 
-export function loadProjectMemories(): { project: string; files: string[] }[] {
+export function loadProjectMemories(): ProjectMemory[] {
   const dir = path.join(CLAUDE_DIR, "projects");
   try {
     const projects = fs.readdirSync(dir);
     return projects.map((p) => {
       const memDir = path.join(dir, p, "memory");
-      let files: string[] = [];
+      let files: { name: string; content: string }[] = [];
       try {
-        files = fs.readdirSync(memDir).filter((f) => f.endsWith(".md"));
+        const mdFiles = fs.readdirSync(memDir).filter((f) => f.endsWith(".md"));
+        files = mdFiles.map((f) => ({
+          name: f,
+          content: fs.readFileSync(path.join(memDir, f), "utf-8").slice(0, 5000),
+        }));
       } catch {
         /* no memory dir */
       }

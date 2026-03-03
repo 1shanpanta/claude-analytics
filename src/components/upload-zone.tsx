@@ -27,6 +27,16 @@ export function UploadZone({ onDataLoaded }: { onDataLoaded: (data: DashboardDat
       data.history = data.history || [];
       data.memories = data.memories || [];
 
+      // Normalize old memory format (string[] → {name, content}[])
+      for (const mem of data.memories) {
+        if (mem.files?.length && typeof mem.files[0] === "string") {
+          mem.files = (mem.files as unknown as string[]).map((f) => ({
+            name: f,
+            content: "",
+          }));
+        }
+      }
+
       onDataLoaded(data);
     } catch {
       setError("Failed to parse file. Make sure it's a valid JSON export.");

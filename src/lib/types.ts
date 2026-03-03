@@ -51,6 +51,9 @@ export interface ModelUsage {
   cacheReadInputTokens: number;
   cacheCreationInputTokens: number;
   webSearchRequests: number;
+  costUSD?: number;
+  contextWindow?: number;
+  maxOutputTokens?: number;
 }
 
 export interface StatsCache {
@@ -67,6 +70,8 @@ export interface StatsCache {
     messageCount: number;
     timestamp: string;
   };
+  version?: string;
+  lastComputedDate?: string;
 }
 
 export interface SessionMessage {
@@ -76,9 +81,22 @@ export interface SessionMessage {
   toolUse?: { name: string; id: string }[];
 }
 
+export interface AccountInfo {
+  accountUUID?: string;
+  organizationUUID?: string;
+  appVersion?: string;
+}
+
+export interface ProjectMemory {
+  project: string;
+  files: { name: string; content: string }[];
+}
+
 export interface DashboardData {
   stats: StatsCache | null;
   sessions: SessionMeta[];
   history: HistoryEntry[];
-  memories: { project: string; files: string[] }[];
+  memories: ProjectMemory[];
+  account?: AccountInfo;
+  exportedAt?: string;
 }
