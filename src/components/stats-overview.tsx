@@ -2,6 +2,7 @@
 
 import type { StatsCache, SessionMeta } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatDuration, formatCost } from "@/lib/utils";
 import {
   MessageSquare,
   Clock,
@@ -9,6 +10,7 @@ import {
   GitCommit,
   FileCode,
   Terminal,
+  DollarSign,
 } from "lucide-react";
 
 export function StatsOverview({
@@ -35,6 +37,11 @@ export function StatsOverview({
     (a, s) => a + s.files_modified,
     0
   );
+
+  const totalCost = stats
+    ? Object.values(stats.modelUsage).reduce((a, u) => a + (u.costUSD ?? 0), 0)
+    : 0;
+  const modelCount = stats ? Object.keys(stats.modelUsage).length : 0;
 
   const cards = [
     {
@@ -75,14 +82,21 @@ export function StatsOverview({
     {
       title: "Avg Session",
       value: `${Math.round(totalDuration / Math.max(sessions.length, 1))}m`,
-      sub: `longest: ${stats?.longestSession ? Math.round(stats.longestSession.duration / 60000) + "m" : "N/A"}`,
+      sub: `longest: ${stats?.longestSession ? formatDuration(stats.longestSession.duration) : "N/A"}`,
       icon: Clock,
       tab: "activity",
+    },
+    {
+      title: "Total Cost",
+      value: formatCost(totalCost),
+      sub: `across ${modelCount} model${modelCount !== 1 ? "s" : ""}`,
+      icon: DollarSign,
+      tab: "models",
     },
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7">
       {cards.map((card) => (
         <Card
           key={card.title}

@@ -2,6 +2,7 @@
 
 import type { StatsCache } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatTokens, formatCost } from "@/lib/utils";
 import {
   PieChart,
   Pie,
@@ -26,12 +27,6 @@ function formatModelName(name: string): string {
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-function formatTokens(n: number): string {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
-  return String(n);
-}
-
 export function ModelBreakdown({ stats }: { stats: StatsCache | null }) {
   if (!stats) return null;
 
@@ -54,7 +49,12 @@ export function ModelBreakdown({ stats }: { stats: StatsCache | null }) {
     output: usage.outputTokens,
     cacheRead: usage.cacheReadInputTokens,
     cacheCreate: usage.cacheCreationInputTokens,
+    cost: usage.costUSD ?? 0,
+    webSearches: usage.webSearchRequests ?? 0,
   }));
+
+  const hasWebSearches = tokenTable.some((r) => r.webSearches > 0);
+  const totalCost = tokenTable.reduce((a, r) => a + r.cost, 0);
 
   return (
     <div className="space-y-6">
@@ -136,7 +136,9 @@ export function ModelBreakdown({ stats }: { stats: StatsCache | null }) {
                   <th className="pb-3 pr-4 text-right">Input</th>
                   <th className="pb-3 pr-4 text-right">Output</th>
                   <th className="pb-3 pr-4 text-right">Cache Read</th>
-                  <th className="pb-3 text-right">Cache Create</th>
+                  <th className="pb-3 pr-4 text-right">Cache Create</th>
+                  <th className="pb-3 pr-4 text-right">Cost</th>
+                  {hasWebSearches && <th className="pb-3 text-right">Web Searches</th>}
                 </tr>
               </thead>
               <tbody>
@@ -146,9 +148,20 @@ export function ModelBreakdown({ stats }: { stats: StatsCache | null }) {
                     <td className="py-3 pr-4 text-right font-mono text-xs">{formatTokens(row.input)}</td>
                     <td className="py-3 pr-4 text-right font-mono text-xs">{formatTokens(row.output)}</td>
                     <td className="py-3 pr-4 text-right font-mono text-xs">{formatTokens(row.cacheRead)}</td>
-                    <td className="py-3 text-right font-mono text-xs">{formatTokens(row.cacheCreate)}</td>
+                    <td className="py-3 pr-4 text-right font-mono text-xs">{formatTokens(row.cacheCreate)}</td>
+                    <td className="py-3 pr-4 text-right font-mono text-xs">{formatCost(row.cost)}</td>
+                    {hasWebSearches && <td className="py-3 text-right font-mono text-xs">{row.webSearches}</td>}
                   </tr>
                 ))}
+                <tr className="border-t font-medium">
+                  <td className="pt-3 pr-4">Total</td>
+                  <td className="pt-3 pr-4 text-right font-mono text-xs">{formatTokens(tokenTable.reduce((a, r) => a + r.input, 0))}</td>
+                  <td className="pt-3 pr-4 text-right font-mono text-xs">{formatTokens(tokenTable.reduce((a, r) => a + r.output, 0))}</td>
+                  <td className="pt-3 pr-4 text-right font-mono text-xs">{formatTokens(tokenTable.reduce((a, r) => a + r.cacheRead, 0))}</td>
+                  <td className="pt-3 pr-4 text-right font-mono text-xs">{formatTokens(tokenTable.reduce((a, r) => a + r.cacheCreate, 0))}</td>
+                  <td className="pt-3 pr-4 text-right font-mono text-xs">{formatCost(totalCost)}</td>
+                  {hasWebSearches && <td className="pt-3 text-right font-mono text-xs">{tokenTable.reduce((a, r) => a + r.webSearches, 0)}</td>}
+                </tr>
               </tbody>
             </table>
           </div>
