@@ -4,6 +4,8 @@ A personal analytics dashboard for [Claude Code](https://claude.ai/claude-code) 
 
 **Your data never leaves your browser.** The hosted version processes everything client-side.
 
+![Dashboard Preview](docs/dashboard-preview.jpeg)
+
 ## Features
 
 - **Activity Heatmap** — GitHub-style contribution grid showing daily message activity
