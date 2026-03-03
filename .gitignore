@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# lock files (using bun)
+package-lock.json
+
+# export data
+claude-analytics-export.json
