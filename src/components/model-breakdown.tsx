@@ -1,0 +1,159 @@
+"use client";
+
+import type { StatsCache } from "@/lib/types";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+} from "recharts";
+
+const COLORS = ["#ffffff", "#d1d5db", "#9ca3af", "#6b7280", "#e5e7eb"];
+
+function formatModelName(name: string): string {
+  return name
+    .replace("claude-", "")
+    .replace(/-\d{8}$/, "")
+    .replace(/-(\d+)-(\d+)$/, " $1.$2")
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function formatTokens(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
+  return String(n);
+}
+
+export function ModelBreakdown({ stats }: { stats: StatsCache | null }) {
+  if (!stats) return null;
+
+  const pieData = Object.entries(stats.modelUsage).map(([model, usage]) => ({
+    name: formatModelName(model),
+    value: usage.outputTokens + usage.inputTokens,
+  }));
+
+  const barData = Object.entries(stats.modelUsage).map(([model, usage]) => ({
+    name: formatModelName(model),
+    input: usage.inputTokens,
+    output: usage.outputTokens,
+    cacheRead: usage.cacheReadInputTokens,
+    cacheCreate: usage.cacheCreationInputTokens,
+  }));
+
+  const tokenTable = Object.entries(stats.modelUsage).map(([model, usage]) => ({
+    name: formatModelName(model),
+    input: usage.inputTokens,
+    output: usage.outputTokens,
+    cacheRead: usage.cacheReadInputTokens,
+    cacheCreate: usage.cacheCreationInputTokens,
+  }));
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Model Usage Distribution</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={pieData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={100}
+                  dataKey="value"
+                  label={({ name }) => name}
+                  labelLine={{ stroke: "#555" }}
+                >
+                  {pieData.map((_, i) => (
+                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  cursor={false}
+                  contentStyle={{
+                    backgroundColor: "#141414",
+                    border: "1px solid #2a2a2a",
+                    borderRadius: "8px",
+                    color: "#e5e7eb",
+                  }}
+                  formatter={(value) => [formatTokens(Number(value ?? 0)), "Tokens"]}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Output Tokens by Model</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={barData}>
+                <XAxis dataKey="name" tick={{ fontSize: 10 }} stroke="#555555" />
+                <YAxis tick={{ fontSize: 11 }} tickFormatter={formatTokens} stroke="#555555" />
+                <Tooltip
+                  cursor={false}
+                  contentStyle={{
+                    backgroundColor: "#141414",
+                    border: "1px solid #2a2a2a",
+                    borderRadius: "8px",
+                    color: "#e5e7eb",
+                  }}
+                  formatter={(value) => [formatTokens(Number(value ?? 0))]}
+                />
+                <Bar dataKey="output" fill="#ffffff" name="Output" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="input" fill="#9ca3af" name="Input" radius={[4, 4, 0, 0]} />
+                <Legend wrapperStyle={{ color: "#d1d5db" }} />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Token Details</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b text-left text-muted-foreground">
+                  <th className="pb-3 pr-4">Model</th>
+                  <th className="pb-3 pr-4 text-right">Input</th>
+                  <th className="pb-3 pr-4 text-right">Output</th>
+                  <th className="pb-3 pr-4 text-right">Cache Read</th>
+                  <th className="pb-3 text-right">Cache Create</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tokenTable.map((row) => (
+                  <tr key={row.name} className="border-b last:border-0">
+                    <td className="py-3 pr-4 font-medium">{row.name}</td>
+                    <td className="py-3 pr-4 text-right font-mono text-xs">{formatTokens(row.input)}</td>
+                    <td className="py-3 pr-4 text-right font-mono text-xs">{formatTokens(row.output)}</td>
+                    <td className="py-3 pr-4 text-right font-mono text-xs">{formatTokens(row.cacheRead)}</td>
+                    <td className="py-3 text-right font-mono text-xs">{formatTokens(row.cacheCreate)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
