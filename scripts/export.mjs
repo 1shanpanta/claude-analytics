@@ -48,8 +48,65 @@ try {
   console.log("  history.jsonl ✗ (not found)");
 }
 
+// 4. Account info
+let account = {};
+try {
+  const statsigDir = path.join(CLAUDE_DIR, "statsig");
+  const files = fs.readdirSync(statsigDir).filter((f) => f.includes("cached.evaluations"));
+  for (const f of files) {
+    try {
+      const raw = fs.readFileSync(path.join(statsigDir, f), "utf-8");
+      const parsed = JSON.parse(raw);
+      if (parsed.user?.userID) account.accountUUID = parsed.user.userID;
+      if (parsed.user?.custom?.organization_uuid) account.organizationUUID = parsed.user.custom.organization_uuid;
+    } catch { /* skip */ }
+  }
+  if (account.accountUUID) {
+    console.log(`  account info ✓ (${account.accountUUID.slice(0, 8)}...)`);
+  } else {
+    console.log("  account info ✗ (not found in statsig cache)");
+  }
+} catch {
+  console.log("  account info ✗ (statsig dir not found)");
+}
+
+// 5. Project memories (with file content)
+let memories = [];
+try {
+  const projectsDir = path.join(CLAUDE_DIR, "projects");
+  const projects = fs.readdirSync(projectsDir);
+  for (const p of projects) {
+    const memDir = path.join(projectsDir, p, "memory");
+    try {
+      const mdFiles = fs.readdirSync(memDir).filter((f) => f.endsWith(".md"));
+      if (mdFiles.length > 0) {
+        const files = mdFiles.map((f) => ({
+          name: f,
+          content: fs.readFileSync(path.join(memDir, f), "utf-8").slice(0, 5000),
+        }));
+        memories.push({ project: p, files });
+      }
+    } catch { /* no memory dir */ }
+  }
+  if (memories.length > 0) {
+    const totalFiles = memories.reduce((a, m) => a + m.files.length, 0);
+    console.log(`  memories ✓ (${totalFiles} files across ${memories.length} projects)`);
+  } else {
+    console.log("  memories ✗ (none found)");
+  }
+} catch {
+  console.log("  memories ✗ (projects dir not found)");
+}
+
 // Write output
-const data = { stats, sessions, history, memories: [] };
+const data = {
+  stats,
+  sessions,
+  history,
+  memories,
+  account: Object.keys(account).length > 0 ? account : undefined,
+  exportedAt: new Date().toISOString(),
+};
 fs.writeFileSync(OUTPUT, JSON.stringify(data));
 
 const sizeMB = (fs.statSync(OUTPUT).size / 1024 / 1024).toFixed(1);
