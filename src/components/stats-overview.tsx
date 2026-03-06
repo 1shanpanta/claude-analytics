@@ -11,6 +11,7 @@ import {
   FileCode,
   Terminal,
   DollarSign,
+  Info,
 } from "lucide-react";
 
 export function StatsOverview({
@@ -110,7 +111,17 @@ export function StatsOverview({
             <card.icon className="h-4 w-4 text-gray-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{card.value}</div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-2xl font-bold text-white">{card.value}</span>
+              {card.title === "Total Cost" && totalCost === 0 && (
+                <span className="group relative">
+                  <Info className="h-3.5 w-3.5 text-gray-500 cursor-help" />
+                  <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 rounded-md bg-gray-800 px-3 py-2 text-xs text-gray-300 opacity-0 shadow-lg transition-opacity group-hover:opacity-100 z-50">
+                    Cost data is unavailable for API-free usage (e.g. Max subscription or Pro plan). Only API usage reports cost.
+                  </span>
+                </span>
+              )}
+            </div>
             <p className="text-xs text-gray-500">{card.sub}</p>
           </CardContent>
         </Card>
