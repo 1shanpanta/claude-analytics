@@ -3,6 +3,7 @@
 import type { StatsCache } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatTokens, formatCost } from "@/lib/utils";
+import { Info } from "lucide-react";
 import {
   PieChart,
   Pie,
@@ -137,7 +138,19 @@ export function ModelBreakdown({ stats }: { stats: StatsCache | null }) {
                   <th className="pb-3 pr-4 text-right">Output</th>
                   <th className="pb-3 pr-4 text-right">Cache Read</th>
                   <th className="pb-3 pr-4 text-right">Cache Create</th>
-                  <th className="pb-3 pr-4 text-right">Cost</th>
+                  <th className="pb-3 pr-4 text-right">
+                    <span className="inline-flex items-center justify-end gap-1">
+                      Cost
+                      {totalCost === 0 && (
+                        <span className="group relative">
+                          <Info className="h-3 w-3 text-gray-500 cursor-help" />
+                          <span className="pointer-events-none absolute bottom-full right-0 mb-2 w-48 rounded-md bg-gray-800 px-3 py-2 text-xs font-normal text-gray-300 text-left opacity-0 shadow-lg transition-opacity group-hover:opacity-100 z-50">
+                            Cost data is unavailable for API-free usage (e.g. Max subscription or Pro plan). Only API usage reports cost.
+                          </span>
+                        </span>
+                      )}
+                    </span>
+                  </th>
                   {hasWebSearches && <th className="pb-3 text-right">Web Searches</th>}
                 </tr>
               </thead>
