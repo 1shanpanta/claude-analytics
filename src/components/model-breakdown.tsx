@@ -74,8 +74,8 @@ export function ModelBreakdown({ stats }: { stats: StatsCache | null }) {
                   innerRadius={60}
                   outerRadius={100}
                   dataKey="value"
-                  label={({ name }) => name}
-                  labelLine={{ stroke: "#555" }}
+                  label={false}
+                  labelLine={false}
                 >
                   {pieData.map((_, i) => (
                     <Cell key={i} fill={COLORS[i % COLORS.length]} />
@@ -90,6 +90,10 @@ export function ModelBreakdown({ stats }: { stats: StatsCache | null }) {
                     color: "#e5e7eb",
                   }}
                   formatter={(value) => [formatTokens(Number(value ?? 0)), "Tokens"]}
+                />
+                <Legend
+                  wrapperStyle={{ color: "#d1d5db", fontSize: "12px" }}
+                  formatter={(value) => <span style={{ color: "#d1d5db" }}>{value}</span>}
                 />
               </PieChart>
             </ResponsiveContainer>
