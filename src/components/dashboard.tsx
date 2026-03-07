@@ -145,12 +145,12 @@ export function Dashboard({
         <StatsOverview stats={data.stats} sessions={data.sessions} onNavigate={setActiveTab} />
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-8">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="activity">Activity</TabsTrigger>
-            <TabsTrigger value="sessions">Sessions</TabsTrigger>
-            <TabsTrigger value="models">Models</TabsTrigger>
-            <TabsTrigger value="tools">Tools</TabsTrigger>
-            <TabsTrigger value="history">Prompts</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-5 p-1">
+            <TabsTrigger value="activity" className="h-full">Activity</TabsTrigger>
+            <TabsTrigger value="sessions" className="h-full">Sessions</TabsTrigger>
+            <TabsTrigger value="models" className="h-full">Models</TabsTrigger>
+            <TabsTrigger value="tools" className="h-full">Tools</TabsTrigger>
+            <TabsTrigger value="history" className="h-full">Prompts</TabsTrigger>
           </TabsList>
 
           <TabsContent value="activity" className="mt-6 space-y-6">
