@@ -71,40 +71,6 @@ The dashboard reads these files and renders charts + tables. No external APIs, n
 - **Lucide Icons**
 - **bun** (package manager + runtime)
 
-## Project Structure
-
-```
-src/
-├── app/
-│   ├── page.tsx              # Server component, auto-detects local data
-│   ├── layout.tsx            # Root layout with dark mode class
-│   ├── globals.css           # Dark neomorphic theme + select styles
-│   └── api/session-messages/ # API route for loading full conversation threads
-├── components/
-│   ├── client-page.tsx       # Multi-profile state management
-│   ├── upload-zone.tsx       # Drag-and-drop file upload landing
-│   ├── dashboard.tsx         # Main layout with tabs, project filter, profile switcher
-│   ├── stats-overview.tsx    # 7 clickable stat cards (incl. cost)
-│   ├── activity-heatmap.tsx  # GitHub-style heatmap with hover tooltips
-│   ├── hour-chart.tsx        # Sessions by hour bar chart
-│   ├── project-breakdown.tsx # Top projects horizontal bar chart
-│   ├── daily-tokens-chart.tsx # Stacked area chart for daily token usage
-│   ├── session-table.tsx     # Expandable session list with message viewer
-│   ├── model-breakdown.tsx   # Pie + bar + table with cost/search columns
-│   ├── tool-usage-chart.tsx  # Tool usage + languages bar charts
-│   ├── prompt-history.tsx    # Searchable prompt log with copy
-│   └── ui/                   # shadcn components (card, tabs, badge, select, etc.)
-├── lib/
-│   ├── types.ts              # Shared TypeScript interfaces
-│   ├── utils.ts              # cn(), formatTokens, formatDuration, formatCost
-│   └── load-data.ts          # Server-side data loader (fs)
-scripts/
-└── export.mjs                # CLI export script (stats, sessions, history, account, memories)
-docs/
-├── architecture.md           # System architecture and data flow
-├── components.md             # Component reference and props
-└── data-model.md             # Data types and export format
-```
 
 ## License
 
